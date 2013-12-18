@@ -6,7 +6,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/4]).
+-export([start_link/1]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -19,13 +19,7 @@
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
-start_link(Consumer_key, Consumer_secret, Access_token, Access_token_secret) ->
-    Params = [
-        {consumer_key, Consumer_key},
-        {consumer_secret, Consumer_secret},
-        {access_token, Access_token},
-        {access_token_secret, Access_token_secret}
-    ],
+start_link(Params) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Params, []).
 
 %% ------------------------------------------------------------------
@@ -33,6 +27,7 @@ start_link(Consumer_key, Consumer_secret, Access_token, Access_token_secret) ->
 %% ------------------------------------------------------------------
 
 init(Args) ->
+    io:format("~p~n", [Args]),
     {ok, []}.
 
 handle_call(_Request, _From, State) ->
