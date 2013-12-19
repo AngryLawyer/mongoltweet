@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./rebar compile && erl -boot start_sasl -pa ebin -s appmon start -s mongoltweet start
+./rebar compile && erl -boot start_sasl -pa ebin -config mongoltweet.config -s appmon start -s mongoltweet start
