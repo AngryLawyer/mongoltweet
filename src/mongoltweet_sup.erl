@@ -25,11 +25,17 @@ start_link() ->
 
 init([]) ->
     Args = [[
-        {consumer_key, application:get_env(consumer_key)},
-        {consumer_secret, application:get_env(consumer_secret)},
-        {access_token, application:get_env(access_token)},
-        {access_token_secret, application:get_env(access_token_secret)}
+        {consumer_key, get_setting(consumer_key, undefined)},
+        {consumer_secret, get_setting(consumer_secret, undefined)},
+        {access_token, get_setting(access_token, undefined)},
+        {access_token_secret, get_setting(access_token_secret, undefined)}
     ]],
     {ok, { {one_for_one, 5, 10}, [
         ?CHILD(tweetgrabber, worker, Args)
     ]}}.
+
+get_setting(Name, Default) ->
+    case application:get_env(Name) of
+        {ok, Value} -> Value;
+        _ -> Default
+    end.
