@@ -31,6 +31,7 @@ init([]) ->
         {access_token_secret, get_setting(access_token_secret, undefined)}
     ]],
     {ok, { {one_for_one, 5, 10}, [
+        ?CHILD(ibrowse, worker, []),
         ?CHILD(tweetgrabber, worker, Args)
     ]}}.
 

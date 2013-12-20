@@ -48,3 +48,9 @@ code_change(_OldVsn, State, _Extra) ->
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
+
+encode_consumer_key(Consumer_key, Consumer_secret) ->
+    base64:encode_to_string(pair_consumer_key(Consumer_key, Consumer_secret)).
+
+pair_consumer_key(Consumer_key, Consumer_secret) ->
+    string:join([Consumer_key, Consumer_secret], ":").
