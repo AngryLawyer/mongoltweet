@@ -54,3 +54,14 @@ encode_consumer_key(Consumer_key, Consumer_secret) ->
 
 pair_consumer_key(Consumer_key, Consumer_secret) ->
     string:join([Consumer_key, Consumer_secret], ":").
+
+build_oauth_details(Consumer_key, Access_token) ->
+    [
+        {oauth_consumer_key, Consumer_key},
+        {oauth_nonce, erlang:timestamp()}, %FIXME: Should be unix time
+        {oauth_signature_method, "HMAC-SHA1"},
+        {oath_token, Access_token},
+        {oath_timestamp, erlang_timestamp()},
+        {oath_version, "1.0"}
+    ].
+% http://stackoverflow.com/questions/12916539/simplest-php-example-for-retrieving-user-timeline-with-twitter-api-version-1-1
