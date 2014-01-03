@@ -1,6 +1,7 @@
 -module(tweetgrabber).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
+-compile(export_all).
 
 %% ------------------------------------------------------------------
 %% API Function Exports
@@ -56,7 +57,7 @@ build_oauth_details(Consumer_key, Access_token) ->
         {oauth_nonce, erlang:timestamp()}, %FIXME: Should be unix time
         {oauth_signature_method, "HMAC-SHA1"},
         {oath_token, Access_token},
-        {oath_timestamp, erlang_timestamp()},
+        {oath_timestamp, erlang:timestamp()},
         {oath_version, "1.0"}
     ].
 
@@ -65,7 +66,7 @@ build_base_string(Uri, Method, Params) ->
     Start ++ string:join([string:join(Key, Value, "=") || {Key, Value} <- Params], "&").
 
 build_composite_key(Consumer_secret, Access_token) ->
-    string:join([Consumer_key, Consumer_secret], ":").
+    string:join([Consumer_secret, Access_token], ":").
 
 build_oauth_signature(Base_info, Composite_key) ->
     base64:encode_to_string(crypto:hmac(sha1, Base_info, Composite_key)).
@@ -74,6 +75,6 @@ add_oauth_signature(Details, Oauth_signature) ->
     [{oauth_signature, Oauth_signature} | Details].
 
 build_authorization_header(Oauth_details) ->
-    "Authorization: OAuth " ++ [string:join([Key, "\"" ++ Value ++ "\"" || {Key, Value} <- Oauth_details], ", ").
+    "Authorization: OAuth " ++ string:join([lists:flatten(io_lib:format("~p=\"~p\"", [Key, Value])) || {Key, Value} <- Oauth_details], ", ").
 
 % http://stackoverflow.com/questions/12916539/simplest-php-example-for-retrieving-user-timeline-with-twitter-api-version-1-1
