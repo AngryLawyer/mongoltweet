@@ -81,6 +81,6 @@ build_authorization_header(Oauth_details) ->
 
 unix_time() ->
     {Megasecs, Secs, _Microsecs} = erlang:timestamp(),
-    Mega * 1000000 + Secs.
+    Megasecs * 1000000 + Secs.
 
 % http://stackoverflow.com/questions/12916539/simplest-php-example-for-retrieving-user-timeline-with-twitter-api-version-1-1

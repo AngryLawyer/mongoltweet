@@ -3,4 +3,4 @@
 
 ./rebar compile
 
-erl -boot start_sasl -pa ebin -pa deps/hackney/ebin -pa deps/hackney_lib/ebin -pa deps/mimetypes/deps -config mongoltweet.config -s mongoltweet start
+erl -boot start_sasl -pa ebin -pa deps/ibrowse/ebin -config mongoltweet.config -s mongoltweet start
