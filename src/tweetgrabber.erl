@@ -25,14 +25,23 @@
 start_link(Params) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Params, []).
 
+test_fetch() ->
+    gen_server:call(?MODULE, test).
+
+
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 
 init(Args) ->
     io:format("~p~n", [Args]),
-    {ok, []}.
+    {ok, Args}.
 
+handle_call(test, _From, State) ->
+    Consumer_key = proplists:get_value(consumer_key, State),
+    Access_token = proplists:get_value(access_token, State),
+    Consumer_secret = proplists:get_value(consumer_secret, State),
+    {reply, request(Consumer_key, Access_token, Consumer_secret), State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -52,6 +61,13 @@ code_change(_OldVsn, State, _Extra) ->
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
 
+request(Consumer_key, Access_token, Consumer_secret) ->
+    Oauth_params = build_oauth_details(Consumer_key, Access_token),
+    Base_string = build_base_string("https://api-twitter.com/1.1/statuses/user_timeline.json", "GET", Oauth_params),
+    Composite_key = build_composite_key(Consumer_secret, Access_token),
+    Signature = build_oauth_signature(Base_string, Composite_key),
+    Oauth_params_extended = add_oauth_signature(Oauth_params, Signature),
+    Oauth_params_extended.
 
 build_oauth_details(Consumer_key, Access_token) ->
     [
@@ -80,7 +96,7 @@ build_authorization_header(Oauth_details) ->
     "Authorization: OAuth " ++ string:join([lists:flatten(io_lib:format("~p=\"~p\"", [Key, Value])) || {Key, Value} <- Oauth_details], ", ").
 
 unix_time() ->
-    {Megasecs, Secs, _Microsecs} = erlang:timestamp(),
+    {Megasecs, Secs, _Microsecs} = os:timestamp(),
     Megasecs * 1000000 + Secs.
 
 % http://stackoverflow.com/questions/12916539/simplest-php-example-for-retrieving-user-timeline-with-twitter-api-version-1-1
