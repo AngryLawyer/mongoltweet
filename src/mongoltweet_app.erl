@@ -18,6 +18,6 @@ start(_StartType, _StartArgs) ->
     mongoltweet_sup:start_link().
 
 stop(_State) ->
-    ssl:stop(),
     lhttpc:stop(),
+    ssl:stop(),
     ok.
