@@ -34,7 +34,6 @@ test_fetch() ->
 %% ------------------------------------------------------------------
 
 init(Args) ->
-    io:format("~p~n", [Args]),
     {ok, Args}.
 
 handle_call(test, _From, State) ->
@@ -70,24 +69,25 @@ request(Consumer_key, Access_token, Consumer_secret) ->
     Oauth_params_extended.
 
 build_oauth_details(Consumer_key, Access_token) ->
+    Time = lists:nth(1, io_lib:format("~w", [unix_time()])),
     [
         {oauth_consumer_key, Consumer_key},
-        {oauth_nonce, unix_time()},
+        {oauth_nonce, Time},
         {oauth_signature_method, "HMAC-SHA1"},
         {oath_token, Access_token},
-        {oath_timestamp, unix_time()},
+        {oath_timestamp, Time},
         {oath_version, "1.0"}
     ].
 
 build_base_string(Uri, Method, Params) ->
     Start = Method ++ "&" ++ Uri ++ "&",
-    Start ++ string:join([string:join(Key, Value, "=") || {Key, Value} <- Params], "&").
+    Start ++ string:join([lists:flatten(io_lib:format("~w=~s", [Key, Value])) || {Key, Value} <- Params], "&").
 
 build_composite_key(Consumer_secret, Access_token) ->
     string:join([Consumer_secret, Access_token], ":").
 
 build_oauth_signature(Base_info, Composite_key) ->
-    base64:encode_to_string(crypto:hmac(sha1, Base_info, Composite_key)).
+    base64:encode_to_string(crypto:sha_mac(Base_info, Composite_key)).
 
 add_oauth_signature(Details, Oauth_signature) ->
     [{oauth_signature, Oauth_signature} | Details].

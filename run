@@ -3,4 +3,4 @@
 
 ./rebar compile
 
-erl -boot start_sasl -pa ebin -pa deps/lhttpc/ebin -config mongoltweet.config -s mongoltweet start
+erl -boot start_sasl -pa ebin -pa deps/lhttpc/ebin -pa $ERL_LIBS/sync/ebin -config mongoltweet.config -s mongoltweet start
