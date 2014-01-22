@@ -63,8 +63,7 @@ code_change(_OldVsn, State, _Extra) ->
 request(Consumer_key, Access_token, Consumer_secret) ->
     Url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=angry_lawyer",
     Headers = build_all_headers(Url, Consumer_key, Access_token, Consumer_secret),
-    Headers.
-    %lhttpc:request(Url,get,[],infinity). 
+    lhttpc:request(Url,get,[Headers],infinity). 
 
 build_all_headers(Url, Consumer_key, Access_token, Consumer_secret) -> 
     Oauth_params = build_oauth_details(Consumer_key, Access_token),
@@ -99,7 +98,7 @@ add_oauth_signature(Details, Oauth_signature) ->
     [{oauth_signature, Oauth_signature} | Details].
 
 build_authorization_header(Oauth_details) ->
-    "Authorization: OAuth " ++ string:join([lists:flatten(io_lib:format("~s=\"~s\"", [Key, Value])) || {Key, Value} <- Oauth_details], ", ").
+    {"Authorization", "OAuth " ++ string:join([lists:flatten(io_lib:format("~s=\"~s\"", [Key, Value])) || {Key, Value} <- Oauth_details], ", ")}.
 
 unix_time() ->
     {Megasecs, Secs, _Microsecs} = os:timestamp(),
