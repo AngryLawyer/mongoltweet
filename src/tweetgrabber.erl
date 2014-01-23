@@ -77,7 +77,7 @@ build_all_headers(Url, Consumer_key, Access_token, Consumer_secret) ->
     build_authorization_header(Oauth_params_extended).
 
 build_oauth_details(Consumer_key, Access_token, Timestamp) ->
-    Time_string = lists:nth(1, io_lib:format("~w", [Timestamp)])),
+    Time_string = lists:nth(1, io_lib:format("~w", [Timestamp])),
     [
         {oauth_consumer_key, Consumer_key},
         {oauth_nonce, Time_string},
@@ -112,6 +112,10 @@ unix_time() ->
 -ifdef(TEST).
 
 build_oauth_details_test() ->
-    ok.
+    Consumer_key = "12345",
+    Access_token = "67890",
+    Timestamp = 100,
+    Details = build_oauth_details(Consumer_key, Access_token, Timestamp),
+    ok. %TODO: Asserts on members
 
 -endif.
