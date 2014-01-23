@@ -1,7 +1,10 @@
 -module(tweetgrabber).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
--compile(export_all).
+
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
 
 %% ------------------------------------------------------------------
 %% API Function Exports
@@ -105,3 +108,10 @@ unix_time() ->
     Megasecs * 1000000 + Secs.
 
 % http://stackoverflow.com/questions/12916539/simplest-php-example-for-retrieving-user-timeline-with-twitter-api-version-1-1
+
+-ifdef(TEST).
+
+build_oauth_details_test() ->
+    ok.
+
+-endif.
