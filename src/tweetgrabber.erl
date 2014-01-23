@@ -69,21 +69,21 @@ request(Consumer_key, Access_token, Consumer_secret) ->
     lhttpc:request(Url,get,[Headers],infinity). 
 
 build_all_headers(Url, Consumer_key, Access_token, Consumer_secret) -> 
-    Oauth_params = build_oauth_details(Consumer_key, Access_token),
+    Oauth_params = build_oauth_details(Consumer_key, Access_token, unix_time()),
     Base_string = build_base_string(Url, "GET", Oauth_params),
     Composite_key = build_composite_key(Consumer_secret, Access_token),
     Signature = build_oauth_signature(Base_string, Composite_key),
     Oauth_params_extended = add_oauth_signature(Oauth_params, Signature),
     build_authorization_header(Oauth_params_extended).
 
-build_oauth_details(Consumer_key, Access_token) ->
-    Time = lists:nth(1, io_lib:format("~w", [unix_time()])),
+build_oauth_details(Consumer_key, Access_token, Timestamp) ->
+    Time_string = lists:nth(1, io_lib:format("~w", [Timestamp)])),
     [
         {oauth_consumer_key, Consumer_key},
-        {oauth_nonce, Time},
+        {oauth_nonce, Time_string},
         {oauth_signature_method, "HMAC-SHA1"},
         {oath_token, Access_token},
-        {oath_timestamp, Time},
+        {oath_timestamp, Time_string},
         {oath_version, "1.0"}
     ].
 
