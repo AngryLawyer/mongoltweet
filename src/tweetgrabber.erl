@@ -83,14 +83,14 @@ build_oauth_details(Consumer_key, Access_token, Timestamp) ->
         {oauth_consumer_key, Consumer_key},
         {oauth_nonce, Time_string},
         {oauth_signature_method, "HMAC-SHA1"},
-        {oauth_token, Access_token},
         {oauth_timestamp, Time_string},
+        {oauth_token, Access_token},
         {oauth_version, "1.0"}
     ].
 
 build_base_string(Uri, Method, Params) ->
-    Start = Method ++ "&" ++ Uri ++ "&",
-    Start ++ string:join([lists:flatten(io_lib:format("~w=~s", [Key, Value])) || {Key, Value} <- Params], "&").
+    Start = Method ++ "&" ++ edoc_lib:escape_uri(Uri) ++ "&",
+    Start ++ edoc_lib:escape_uri(string:join([lists:flatten(io_lib:format("~w=~s", [Key, Value])) || {Key, Value} <- Params], "&")).
 
 build_composite_key(Consumer_secret, Access_token_secret) ->
     string:join([Consumer_secret, Access_token_secret], "&").
@@ -132,7 +132,7 @@ build_base_string_test() ->
     Details = build_oauth_details(Consumer_key, Access_token, Timestamp),
 
     String = build_base_string("https://api.twitter.com/1.1/statuses/user_timeline.json", "GET", Details),
-    ?assertEqual("GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fuser_timeline.json&oauth_consumer_key%3D12345%26oauth_nonce%3D100%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D100%26oauth_token%3D67890%26oauth_version%3D1.0", String).
+    ?assertEqual("GET&https%3a%2f%2fapi.twitter.com%2f1.1%2fstatuses%2fuser_timeline.json&oauth_consumer_key%3d12345%26oauth_nonce%3d100%26oauth_signature_method%3dHMAC-SHA1%26oauth_timestamp%3d100%26oauth_token%3d67890%26oauth_version%3d1.0", String).
 
 build_composite_key_test() ->
     Consumer_secret = "abcde",
