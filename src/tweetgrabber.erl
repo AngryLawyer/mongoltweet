@@ -118,12 +118,12 @@ build_oauth_details_test() ->
     Timestamp = 100,
     Details = build_oauth_details(Consumer_key, Access_token, Timestamp),
     % Now actually test
-    ?assertEqual(proplists:get_value(oauth_consumer_key, Details), Consumer_key),
-    ?assertEqual(proplists:get_value(oauth_nonce, Details), "100"),
-    ?assertEqual(proplists:get_value(oauth_signature_method, Details), "HMAC-SHA1"),
-    ?assertEqual(proplists:get_value(oauth_token, Details), Access_token),
-    ?assertEqual(proplists:get_value(oauth_timestamp, Details), "100"),
-    ?assertEqual(proplists:get_value(oauth_version, Details), "1.0").
+    ?assertEqual(Consumer_key, proplists:get_value(oauth_consumer_key, Details)),
+    ?assertEqual("100", proplists:get_value(oauth_nonce, Details)),
+    ?assertEqual("HMAC-SHA1", proplists:get_value(oauth_signature_method, Details)),
+    ?assertEqual(Access_token, proplists:get_value(oauth_token, Details)),
+    ?assertEqual("100", proplists:get_value(oauth_timestamp, Details)),
+    ?assertEqual("1.0", proplists:get_value(oauth_version, Details)).
 
 build_base_string_test() ->
     Consumer_key = "12345",
@@ -132,16 +132,16 @@ build_base_string_test() ->
     Details = build_oauth_details(Consumer_key, Access_token, Timestamp),
 
     String = build_base_string("https://api.twitter.com/1.1/statuses/user_timeline.json", "GET", Details),
-    ?assertEqual(String, "GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fuser_timeline.json&oauth_consumer_key%3D12345%26oauth_nonce%3D100%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D100%26oauth_token%3D67890%26oauth_version%3D1.0").
+    ?assertEqual("GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fuser_timeline.json&oauth_consumer_key%3D12345%26oauth_nonce%3D100%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D100%26oauth_token%3D67890%26oauth_version%3D1.0", String).
 
 build_composite_key_test() ->
     Consumer_secret = "abcde",
     Access_token_secret = "lololo",
     String = build_composite_key(Consumer_secret, Access_token_secret),
-    ?assertEqual(String, "abcde&lolol").
+    ?assertEqual("abcde&lolol", String).
 
 build_oauth_signature_test() ->
     Signature = build_oauth_signature("GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fuser_timeline.json&oauth_consumer_key%3D12345%26oauth_nonce%3D100%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D100%26oauth_token%3D67890%26oauth_version%3D1.0","abcde&lolol"),
-    ?assertEqual(Signature, "VcaKB8r06MhJ7+FHbT/b7jSHy6U=").
+    ?assertEqual("VcaKB8r06MhJ7+FHbT/b7jSHy6U=", Signature).
 
 -endif.
