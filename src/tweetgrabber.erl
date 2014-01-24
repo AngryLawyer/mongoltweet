@@ -66,8 +66,11 @@ code_change(_OldVsn, State, _Extra) ->
 
 request(Consumer_key, Access_token, Consumer_secret, Access_token_secret) ->
     Url = "https://api.twitter.com/1.1/statuses/user_timeline.json",
-    Headers = build_all_headers(Url, Consumer_key, Access_token, Consumer_secret, Access_token_secret),
-    lhttpc:request(Url,get,[{"Accept", "*/*"}, Headers],infinity). 
+    Consumer = {Consumer_key, Consumer_secret, hmac_sha1},
+    {ok, Response} = oauth:get(Url, [], Consumer, Access_token, Access_token_secret),
+    Response.
+    %Headers = build_all_headers(Url, Consumer_key, Access_token, Consumer_secret, Access_token_secret),
+    %lhttpc:request(Url,get,[{"Accept", "*/*"}, Headers],infinity). 
 
 build_all_headers(Url, Consumer_key, Access_token, Consumer_secret, Access_token_secret) -> 
     Oauth_params = build_oauth_details(Consumer_key, Access_token, unix_time()),
@@ -83,26 +86,26 @@ build_oauth_details(Consumer_key, Access_token, Timestamp) ->
         {oauth_consumer_key, Consumer_key},
         {oauth_nonce, Time_string},
         {oauth_signature_method, "HMAC-SHA1"},
-        {oauth_timestamp, Time_string},
         {oauth_token, Access_token},
+        {oauth_timestamp, Time_string},
         {oauth_version, "1.0"}
     ].
 
 build_base_string(Uri, Method, Params) ->
     Start = Method ++ "&" ++ edoc_lib:escape_uri(Uri) ++ "&",
-    Start ++ edoc_lib:escape_uri(string:join([lists:flatten(io_lib:format("~w=~s", [Key, Value])) || {Key, Value} <- Params], "&")).
+    Start ++ edoc_lib:escape_uri(string:join([lists:flatten(io_lib:format("~w=~s", [Key, edoc_lib:escape_uri(Value)])) || {Key, Value} <- Params], "&")).
 
 build_composite_key(Consumer_secret, Access_token_secret) ->
     string:join([Consumer_secret, Access_token_secret], "&").
 
 build_oauth_signature(Base_info, Composite_key) ->
-    edoc_lib:escape_uri(base64:encode_to_string(crypto:sha_mac(Composite_key, Base_info))).
+    base64:encode_to_string(crypto:sha_mac(Composite_key, Base_info)).
 
 add_oauth_signature(Details, Oauth_signature) ->
     Details ++ [{oauth_signature, Oauth_signature}].
 
 build_authorization_header(Oauth_details) ->
-    {"Authorization", "OAuth " ++ string:join([lists:flatten(io_lib:format("~s=\"~s\"", [Key, Value])) || {Key, Value} <- Oauth_details], ", ")}.
+    {"Authorization", "OAuth " ++ string:join([lists:flatten(io_lib:format("~s=\"~s\"", [Key, edoc_lib:escape_uri(Value)])) || {Key, Value} <- Oauth_details], ", ")}.
 
 unix_time() ->
     {Megasecs, Secs, _Microsecs} = os:timestamp(),
