@@ -124,4 +124,13 @@ build_oauth_details_test() ->
     ?assertEqual(proplists:get_value(oauth_timestamp, Details), "100"),
     ?assertEqual(proplists:get_value(oauth_version, Details), "1.0").
 
+build_base_string_test() ->
+    Consumer_key = "12345",
+    Access_token = "67890",
+    Timestamp = 100,
+    Details = build_oauth_details(Consumer_key, Access_token, Timestamp),
+
+    String = build_base_string("https://api.twitter.com/1.1/statuses/user_timeline.json", "GET", Details),
+    ?assertEqual(String, "GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fuser_timeline.json&oauth_consumer_key%3D12345%26oauth_nonce%3D100%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D100%26oauth_token%3D67890%26oauth_version%3D1.0").
+
 -endif.
