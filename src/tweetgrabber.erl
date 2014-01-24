@@ -67,7 +67,7 @@ code_change(_OldVsn, State, _Extra) ->
 request(Consumer_key, Access_token, Consumer_secret, Access_token_secret) ->
     Url = "https://api.twitter.com/1.1/statuses/user_timeline.json",
     Headers = build_all_headers(Url, Consumer_key, Access_token, Consumer_secret, Access_token_secret),
-    lhttpc:request(Url,get,[Headers],infinity). 
+    lhttpc:request(Url,get,[{"Accept", "*/*"}, Headers],infinity). 
 
 build_all_headers(Url, Consumer_key, Access_token, Consumer_secret, Access_token_secret) -> 
     Oauth_params = build_oauth_details(Consumer_key, Access_token, unix_time()),
@@ -96,10 +96,10 @@ build_composite_key(Consumer_secret, Access_token_secret) ->
     string:join([Consumer_secret, Access_token_secret], "&").
 
 build_oauth_signature(Base_info, Composite_key) ->
-    base64:encode_to_string(crypto:sha_mac(Composite_key, Base_info)).
+    edoc_lib:escape_uri(base64:encode_to_string(crypto:sha_mac(Composite_key, Base_info))).
 
 add_oauth_signature(Details, Oauth_signature) ->
-    [{oauth_signature, Oauth_signature} | Details].
+    Details ++ [{oauth_signature, Oauth_signature}].
 
 build_authorization_header(Oauth_details) ->
     {"Authorization", "OAuth " ++ string:join([lists:flatten(io_lib:format("~s=\"~s\"", [Key, Value])) || {Key, Value} <- Oauth_details], ", ")}.
@@ -142,6 +142,6 @@ build_composite_key_test() ->
 
 build_oauth_signature_test() ->
     Signature = build_oauth_signature("GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fuser_timeline.json&oauth_consumer_key%3D12345%26oauth_nonce%3D100%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D100%26oauth_token%3D67890%26oauth_version%3D1.0","abcde&lolol"),
-    ?assertEqual("VcaKB8r06MhJ7+FHbT/b7jSHy6U=", Signature).
+    ?assertEqual("VcaKB8r06MhJ7%2bFHbT%2fb7jSHy6U%3d", Signature).
 
 -endif.
