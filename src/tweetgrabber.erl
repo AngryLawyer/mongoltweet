@@ -82,9 +82,9 @@ build_oauth_details(Consumer_key, Access_token, Timestamp) ->
         {oauth_consumer_key, Consumer_key},
         {oauth_nonce, Time_string},
         {oauth_signature_method, "HMAC-SHA1"},
-        {oath_token, Access_token},
-        {oath_timestamp, Time_string},
-        {oath_version, "1.0"}
+        {oauth_token, Access_token},
+        {oauth_timestamp, Time_string},
+        {oauth_version, "1.0"}
     ].
 
 build_base_string(Uri, Method, Params) ->
@@ -107,7 +107,7 @@ unix_time() ->
     {Megasecs, Secs, _Microsecs} = os:timestamp(),
     Megasecs * 1000000 + Secs.
 
-% http://stackoverflow.com/questions/12916539/simplest-php-example-for-retrieving-user-timeline-with-twitter-api-version-1-1
+% http://stackoverflow.com/a/12939923
 
 -ifdef(TEST).
 
@@ -116,6 +116,12 @@ build_oauth_details_test() ->
     Access_token = "67890",
     Timestamp = 100,
     Details = build_oauth_details(Consumer_key, Access_token, Timestamp),
-    ok. %TODO: Asserts on members
+    % Now actually test
+    ?assertEqual(proplists:get_value(oauth_consumer_key, Details), Consumer_key),
+    ?assertEqual(proplists:get_value(oauth_nonce, Details), "100"),
+    ?assertEqual(proplists:get_value(oauth_signature_method, Details), "HMAC-SHA1"),
+    ?assertEqual(proplists:get_value(oauth_token, Details), Access_token),
+    ?assertEqual(proplists:get_value(oauth_timestamp, Details), "100"),
+    ?assertEqual(proplists:get_value(oauth_version, Details), "1.0").
 
 -endif.
