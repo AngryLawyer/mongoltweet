@@ -96,7 +96,7 @@ build_composite_key(Consumer_secret, Access_token_secret) ->
     string:join([Consumer_secret, Access_token_secret], "&").
 
 build_oauth_signature(Base_info, Composite_key) ->
-    base64:encode_to_string(crypto:sha_mac(Base_info, Composite_key)).
+    base64:encode_to_string(crypto:sha_mac(Composite_key, Base_info)).
 
 add_oauth_signature(Details, Oauth_signature) ->
     [{oauth_signature, Oauth_signature} | Details].
