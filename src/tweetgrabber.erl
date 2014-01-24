@@ -93,7 +93,7 @@ build_base_string(Uri, Method, Params) ->
     Start ++ string:join([lists:flatten(io_lib:format("~w=~s", [Key, Value])) || {Key, Value} <- Params], "&").
 
 build_composite_key(Consumer_secret, Access_token_secret) ->
-    string:join([Consumer_secret, Access_token_secret], ":").
+    string:join([Consumer_secret, Access_token_secret], "&").
 
 build_oauth_signature(Base_info, Composite_key) ->
     base64:encode_to_string(crypto:sha_mac(Base_info, Composite_key)).
@@ -138,7 +138,7 @@ build_composite_key_test() ->
     Consumer_secret = "abcde",
     Access_token_secret = "lololo",
     String = build_composite_key(Consumer_secret, Access_token_secret),
-    ?assertEqual("abcde&lolol", String).
+    ?assertEqual("abcde&lololo", String).
 
 build_oauth_signature_test() ->
     Signature = build_oauth_signature("GET&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fuser_timeline.json&oauth_consumer_key%3D12345%26oauth_nonce%3D100%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D100%26oauth_token%3D67890%26oauth_version%3D1.0","abcde&lolol"),
