@@ -3,4 +3,4 @@
 
 ./rebar compile
 
-erl -boot start_sasl -pa ebin -pa deps/lhttpc/ebin -pa deps/oauth/ebin -pa $ERL_LIBS/sync/ebin -config mongoltweet.config -s mongoltweet start -s crypto -s inets -s ssl -s lhttpc
+erl -boot start_sasl -pa ebin -pa deps/lhttpc/ebin -pa deps/oauth/ebin -pa deps/mochiweb/ebin -pa $ERL_LIBS/sync/ebin -config mongoltweet.config -s mongoltweet start -s crypto -s inets -s ssl -s lhttpc
