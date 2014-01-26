@@ -87,4 +87,12 @@ get_response_data_test() ->
     Input = {blah, blah, <<"{\n \"data\": {\n  \"translations\": [\n   {\n    \"translatedText\": \"YAY\"\n   }\n  ]\n }\n}\n">>},
     ?assertEqual(<<"YAY">>, get_response_data(Input)).
 
+build_get_params_test() ->
+    String = <<64,117,110,100,97,114,49,48,48,53,32,208,176,
+                               208,178,209,129,209,130,209,128,208,176,208,
+                               187,208,184,32,209,131,209,133,209,141,209,128,
+                               208,184,208,185,208,189,32,208,188,208,176,209,
+                               133>>,
+    Params = build_get_params("", {q, String}).
+
 -endif.
