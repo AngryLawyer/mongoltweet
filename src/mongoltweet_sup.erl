@@ -24,15 +24,19 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Args = [[
+    Twitter_args = [[
         {consumer_key, get_setting(consumer_key, undefined)},
         {consumer_secret, get_setting(consumer_secret, undefined)},
         {access_token, get_setting(access_token, undefined)},
         {access_token_secret, get_setting(access_token_secret, undefined)}
     ]],
+    Translate_args = [[
+        {translate_key, get_setting(translate_key, undefined)}
+    ]],
+    io:format("~p", [Translate_args]),
     {ok, { {one_for_one, 5, 10}, [
-        %?CHILD(lhttpc, worker, []),
-        ?CHILD(tweetgrabber, worker, Args)
+        ?CHILD(translate, worker, Translate_args),
+        ?CHILD(tweetgrabber, worker, Twitter_args)
     ]}}.
 
 get_setting(Name, Default) ->

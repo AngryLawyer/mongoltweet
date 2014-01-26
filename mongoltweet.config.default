@@ -2,5 +2,6 @@
     {consumer_key, undefined},
     {consumer_secret, undefined},
     {access_token, undefined},
-    {access_token_secret, undefined}
+    {access_token_secret, undefined},
+    {translate_key, undefined}
 ]}].
