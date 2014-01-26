@@ -72,7 +72,18 @@ build_params(String, Key) ->
     ].
 
 build_get_params(Url, Params) ->
-    oauth:uri(Url, Params).
+    Unicode_url = binary:list_to_bin(Url),
+    Binary_params = params_to_binary(Params),
+    <<Unicode_url/binary, "?", Binary_params/binary>>.
+
+params_to_binary(Params) ->
+    params_to_binary(Params, <<>>).
+
+params_to_binary([], Acc) ->
+    Acc;
+params_to_binary([{Key, Value} | Rest], Acc) ->
+    New = <<Key/binary, "=", Value/binary>>,
+    params_to_binary(Rest, <<New/binary, "&", Acc/binary>>).
 
 get_response_data({_, _, Data}) ->
     mochijson2:decode(Data),
@@ -93,6 +104,11 @@ build_get_params_test() ->
                                187,208,184,32,209,131,209,133,209,141,209,128,
                                208,184,208,185,208,189,32,208,188,208,176,209,
                                133>>,
-    Params = build_get_params("", {q, String}).
+    Params = build_get_params("lol", [{q, String}]),
+    ?assertEqual(<<108, 111, 108, 63, 113, 61, 64,117,110,100,97,114,49,48,48,53,32,208,176,
+                               208,178,209,129,209,130,209,128,208,176,208,
+                               187,208,184,32,209,131,209,133,209,141,209,128,
+                               208,184,208,185,208,189,32,208,188,208,176,209,
+                               133>>, Params).
 
 -endif.
