@@ -81,8 +81,15 @@ params_to_binary(Params) ->
 
 params_to_binary([], Acc) ->
     Acc;
+params_to_binary([{Key, Value} | Rest], Acc) when is_list(Value) ->
+    params_to_binary([{Key, list_to_binary(Value)} | Rest], Acc);
+params_to_binary([{Key, Value} | Rest], <<>>) ->
+    Binary_key = atom_to_binary(Key, utf8),
+    New = <<Binary_key/binary, "=", Value/binary>>,
+    params_to_binary(Rest, New);
 params_to_binary([{Key, Value} | Rest], Acc) ->
-    New = <<Key/binary, "=", Value/binary>>,
+    Binary_key = atom_to_binary(Key, utf8),
+    New = <<Binary_key/binary, "=", Value/binary>>,
     params_to_binary(Rest, <<New/binary, "&", Acc/binary>>).
 
 get_response_data({_, _, Data}) ->
