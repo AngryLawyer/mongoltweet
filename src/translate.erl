@@ -72,14 +72,27 @@ build_params(String, Key) ->
     ].
 
 build_get_params(Url, Params) ->
-    %oauth:uri(Url, Params).
+    Url ++ "?" ++ munge_params(Params).
     %Unicode_url = binary:list_to_bin(Url),
     %Binary_params = params_to_binary(Params),
-    Url ++ "?" ++ munge_params(Params).
     %<<Unicode_url/binary, "?", Binary_params/binary>>.
 
 munge_params(Params) ->
-    Params.
+    munge_params(Params, []).
+
+munge_params([], Acc) ->
+    Acc;
+munge_params([{Key, Value} | Rest], []) ->
+    munge_params(Rest, [atom_to_list(Key) ++ "=" ++ Value]);
+munge_params([{Key, Value} | Rest], Acc) ->
+    munge_params(Rest, atom_to_list(Key) ++ "=" ++ Value ++ "&" ++ Acc).
+
+get_response_data({_, _, Data}) ->
+    mochijson2:decode(Data),
+    {struct, Decoded} = mochijson2:decode(Data),
+    {struct, Data_prop} = proplists:get_value(<<"data">>, Decoded),
+    {struct, Translations} = lists:nth(1, proplists:get_value(<<"translations">>, Data_prop)),
+    proplists:get_value(<<"translatedText">>, Translations).
 
 -ifdef(TEST).
 
