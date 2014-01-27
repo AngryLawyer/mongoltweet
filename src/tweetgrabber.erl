@@ -87,7 +87,7 @@ get_response_data({_, _, Data}) ->
     mochijson2:decode(Data).
 
 shrink_tweet({struct, Proplist}) ->
-    {proplists:get_value(<<"id">>, Proplist), proplists:get_value(<<"text">>, Proplist)}.
+    {proplists:get_value(<<"id">>, Proplist), lists:nth(1, io_lib:format("~ts", [proplists:get_value(<<"text">>, Proplist)]))}.
 
 -ifdef(TEST).
 

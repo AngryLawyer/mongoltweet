@@ -67,37 +67,19 @@ build_params(String, Key) ->
     [
         {q, String},
         {key, Key},
-        {source, mn},
-        {target, en}
+        {source, "mn"},
+        {target, "en"}
     ].
 
 build_get_params(Url, Params) ->
-    Unicode_url = binary:list_to_bin(Url),
-    Binary_params = params_to_binary(Params),
-    <<Unicode_url/binary, "?", Binary_params/binary>>.
+    %oauth:uri(Url, Params).
+    %Unicode_url = binary:list_to_bin(Url),
+    %Binary_params = params_to_binary(Params),
+    Url ++ "?" ++ munge_params(Params).
+    %<<Unicode_url/binary, "?", Binary_params/binary>>.
 
-params_to_binary(Params) ->
-    params_to_binary(Params, <<>>).
-
-params_to_binary([], Acc) ->
-    Acc;
-params_to_binary([{Key, Value} | Rest], Acc) when is_list(Value) ->
-    params_to_binary([{Key, list_to_binary(Value)} | Rest], Acc);
-params_to_binary([{Key, Value} | Rest], <<>>) ->
-    Binary_key = atom_to_binary(Key, utf8),
-    New = <<Binary_key/binary, "=", Value/binary>>,
-    params_to_binary(Rest, New);
-params_to_binary([{Key, Value} | Rest], Acc) ->
-    Binary_key = atom_to_binary(Key, utf8),
-    New = <<Binary_key/binary, "=", Value/binary>>,
-    params_to_binary(Rest, <<New/binary, "&", Acc/binary>>).
-
-get_response_data({_, _, Data}) ->
-    mochijson2:decode(Data),
-    {struct, Decoded} = mochijson2:decode(Data),
-    {struct, Data_prop} = proplists:get_value(<<"data">>, Decoded),
-    {struct, Translations} = lists:nth(1, proplists:get_value(<<"translations">>, Data_prop)),
-    proplists:get_value(<<"translatedText">>, Translations).
+munge_params(Params) ->
+    Params.
 
 -ifdef(TEST).
 
@@ -106,11 +88,7 @@ get_response_data_test() ->
     ?assertEqual(<<"YAY">>, get_response_data(Input)).
 
 build_get_params_test() ->
-    String = <<64,117,110,100,97,114,49,48,48,53,32,208,176,
-                               208,178,209,129,209,130,209,128,208,176,208,
-                               187,208,184,32,209,131,209,133,209,141,209,128,
-                               208,184,208,185,208,189,32,208,188,208,176,209,
-                               133>>,
+    String = <<64,117,110,100,97,114,49,48,48,53,32,208,176,208,178,209,129,209,130,209,128,208,176,208,187,208,184,32,209,131,209,133,209,141,209,128,208,184,208,185,208,189,32,208,188,208,176,209,133>>,
     Params = build_get_params("lol", [{q, String}]),
     ?assertEqual(<<108, 111, 108, 63, 113, 61, 64,117,110,100,97,114,49,48,48,53,32,208,176,
                                208,178,209,129,209,130,209,128,208,176,208,
