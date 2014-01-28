@@ -10,7 +10,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/1, translate/1]).
+-export([start_link/1, translate/1, is_mongolian/1]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -29,6 +29,9 @@ start_link(Params) ->
 translate(String) ->
     gen_server:call(?MODULE, {translate, String}).
 
+is_mongolian(String) ->
+    gen_server:call(?MODULE, {is_mongolian, String}).
+
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
@@ -38,6 +41,8 @@ init(Args) ->
 
 handle_call({translate, String}, _From, State) ->
     {reply, do_translate(String, proplists:get_value(translate_key, State)), State};
+handle_call({is_mongolian, String}, _From, State) ->
+    {reply, check_is_mongolian(String), State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -91,15 +96,22 @@ get_response_data({_, _, Data}) ->
     {struct, Translations} = lists:nth(1, proplists:get_value(<<"translations">>, Data_prop)),
     lists:nth(1, io_lib:format("~ts", [proplists:get_value(<<"translatedText">>, Translations)])).
 
+check_is_mongolian(String) ->
+    lists:any(fun(Char) -> Char >= 1024 andalso Char =< 2377 end, String).
+
 -ifdef(TEST).
 
 get_response_data_test() ->
     Input = {blah, blah, <<"{\n \"data\": {\n  \"translations\": [\n   {\n    \"translatedText\": \"YAY\"\n   }\n  ]\n }\n}\n">>},
-    ?assertEqual(<<"YAY">>, get_response_data(Input)).
+    ?assertEqual("YAY", get_response_data(Input)).
 
 build_get_params_test() ->
     String = "I say " ++ [1089,1072,1081,1085],
     Params = build_get_params("lol", [{q, String}]),
     ?assertEqual("lol?q=I+say+%d1%81%d0%b0%d0%b9%d0%bd", Params).
+
+check_is_mongolian_test() ->
+    ?assertEqual(check_is_mongolian([1089,1072,1081,1085]), true),
+    ?assertEqual(check_is_mongolian("sain"), false).
 
 -endif.
