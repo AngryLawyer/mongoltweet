@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-./rebar compile eunit skip_deps=true
+./rebar get-deps
+./rebar compile
+./rebar eunit skip_deps=true

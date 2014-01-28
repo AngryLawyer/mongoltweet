@@ -33,10 +33,10 @@ init([]) ->
     Translate_args = [[
         {translate_key, get_setting(translate_key, undefined)}
     ]],
-    io:format("~p", [Translate_args]),
     {ok, { {one_for_one, 5, 10}, [
         ?CHILD(translate, worker, Translate_args),
-        ?CHILD(tweetgrabber, worker, Twitter_args)
+        ?CHILD(tweetgrabber, worker, Twitter_args),
+        ?CHILD(database, worker, [])
     ]}}.
 
 get_setting(Name, Default) ->
