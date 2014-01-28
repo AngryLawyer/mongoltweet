@@ -33,10 +33,14 @@ init([]) ->
     Translate_args = [[
         {translate_key, get_setting(translate_key, undefined)}
     ]],
+    User_args = [[
+        {twitter_accounts, get_setting(twitter_accounts, [])}
+    ]],
     {ok, { {one_for_one, 5, 10}, [
         ?CHILD(translate, worker, Translate_args),
         ?CHILD(tweetgrabber, worker, Twitter_args),
-        ?CHILD(database, worker, [])
+        ?CHILD(database, worker, []),
+        ?CHILD(worker, worker, User_args)
     ]}}.
 
 get_setting(Name, Default) ->
