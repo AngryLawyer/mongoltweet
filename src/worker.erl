@@ -6,7 +6,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/1, get_tweets/0]).
+-export([start_link/1, update_tweets/0, get_unsolved_tweet/0]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -22,8 +22,11 @@
 start_link(Params) ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, Params, []).
 
-get_tweets() ->
-    gen_server:call(?MODULE, get_tweets).
+update_tweets() ->
+    gen_server:call(?MODULE, update_tweets).
+
+get_unsolved_tweet() ->
+    gen_server:call(?MODULE, get_unsolved_tweet).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -32,7 +35,7 @@ get_tweets() ->
 init(Args) ->
     {ok, Args}.
 
-handle_call(get_tweets, _From, State) ->
+handle_call(update_tweets, _From, State) ->
     % Find all of our users from State
     Accounts = proplists:get_value(twitter_accounts, State),
     % Get the users out of the database
@@ -44,6 +47,12 @@ handle_call(get_tweets, _From, State) ->
     Updated_users = update_users(Tweets),
     % Update our latest tweets field
     {reply, [Account_tuples, Stashed, Updated_users], State};
+handle_call(get_unsolved_tweet, _From, State) ->
+    Tweet = get_unsolved_tweet_inner(),
+    Translated = translate(Tweet),
+    {reply, Translated, State};
+handle_call(solve_tweet, _From, State) ->
+    {reply, ok, State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -119,3 +128,17 @@ get_latest_timestamp(Tweets) ->
             true -> Last_timestamp
         end
     end, 1, Tweets).
+
+get_unsolved_tweet_inner() ->
+    Tweets = database:search_tweets_by_not_solved(),
+    case Tweets of
+        [] -> undefined;
+        [Head | _] -> Head
+    end.
+
+translate({tweet, Identifier, User_name, Timestamp, Mongolian, undefined, Complete}) -> 
+    English = translate:translate(Mongolian),
+    database:insert_tweet(User_name, Timestamp, Mongolian, English, Complete),
+    {tweet, Identifier, User_name, Timestamp, Mongolian, English, Complete};
+translate(Tweet) -> 
+    Tweet.
