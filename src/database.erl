@@ -11,7 +11,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0, insert_user/2, get_user/1, insert_tweet/3, insert_tweet/4, insert_tweet/5, search_tweets_by_name/1, search_tweets_by_not_translated/0, search_tweets_by_not_solved/0]).
+-export([start_link/0, insert_user/2, get_user/1, insert_tweet/3, insert_tweet/4, insert_tweet/5, search_tweets_by_name/1, search_tweets_by_not_translated/0, search_tweets_by_not_solved/0, get_tweet/2]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -51,6 +51,9 @@ search_tweets_by_not_translated() ->
 search_tweets_by_not_solved() ->
     gen_server:call(?MODULE, search_tweets_by_not_solved).
 
+get_tweet(User_name, Timestamp) ->
+    gen_server:call(?MODULE, {get_tweet, User_name, Timestamp}).
+
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
@@ -76,6 +79,12 @@ handle_call(search_tweets_by_not_translated, _From, State) ->
     {reply, internal_search_tweets_by_not_translated(), State};
 handle_call(search_tweets_by_not_solved, _From, State) ->
     {reply, internal_search_tweets_by_not_solved(), State};
+handle_call({get_tweet, User_name, Timestamp}, _From, State) ->
+    Tweet = case internal_retrieve_tweet(User_name, Timestamp) of
+        [] -> undefined;
+        [Head | _Rest] -> Head
+    end,
+    {reply, Tweet, State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -119,8 +128,8 @@ internal_insert(Record) ->
 internal_retrieve_users(User_name) ->
     internal_retrieve(user, User_name).
 
-%internal_retrieve_tweets(User_name, Timestamp) ->
-%    internal_retrieve(tweet, {User_name, Timestamp}).
+internal_retrieve_tweet(User_name, Timestamp) ->
+    internal_retrieve(tweet, {User_name, Timestamp}).
 
 internal_retrieve(Table, Key) ->
     F = fun() ->
