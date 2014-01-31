@@ -52,11 +52,22 @@ handle_call(update_tweets, _From, State) ->
     {reply, [Account_tuples, Stashed, Updated_users], State};
 handle_call(get_unsolved_tweet, _From, State) ->
     Tweet = get_unsolved_tweet_inner(),
-    Translated = translate(Tweet),
+    Tweet_2 = case Tweet of
+        undefined ->
+            handle_call(update_tweets, _From, State),
+            get_unsolved_tweet_inner();
+        _ -> Tweet
+    end,
+    Translated = translate(Tweet_2),
     {reply, Translated, State};
 handle_call({solve_tweet, Name, Timestamp, Translation}, _From, State) ->
     Tweet = database:get_tweet(Name, Timestamp),
-    {reply, Tweet, State};
+    Updated_tweet = case Tweet of
+        undefined -> undefined;
+        {tweet, _, Name, Timestamp, Mongolian, English, _} ->
+            database:insert_tweet(Name, Timestamp, Mongolian, English, Translation)
+    end,
+    {reply, Updated_tweet, State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
