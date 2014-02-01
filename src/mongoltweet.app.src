@@ -5,7 +5,11 @@
   {registered, []},
   {applications, [
                   kernel,
-                  stdlib
+                  stdlib,
+                  inets,
+                  crypto,
+                  mochiweb,
+                  webmachine
                  ]},
   {mod, { mongoltweet_app, []}},
   {env, []}

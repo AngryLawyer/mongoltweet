@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
+
+cd `dirname $0`
+
 ./rebar get-deps
 
 ./rebar compile
 
-erl -boot start_sasl -pa ebin -pa deps/lhttpc/ebin -pa deps/oauth/ebin -pa deps/mochiweb/ebin -pa $ERL_LIBS/sync/ebin -config mongoltweet.config -s mongoltweet start -s crypto -s inets -s ssl -s lhttpc -mnesia dir '"."'
+erl -boot start_sasl -pa $PWD/ebin -pa $PWD/deps/*/ebin -pa $ERL_LIBS/sync/ebin -config mongoltweet.config  -s crypto -s inets -s ssl -s lhttpc -s mochiweb -s webmachine -s mongoltweet start -mnesia dir '"."'
