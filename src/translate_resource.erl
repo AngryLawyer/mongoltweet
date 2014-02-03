@@ -11,9 +11,9 @@ init([]) -> {ok, undefined}.
 
 to_html(ReqData, State) ->
     {Author, _Time, Tweet} = unpack_tweet(worker:get_unsolved_tweet()),
-    Encoded_tweet = unicode:characters_to_binary(Tweet),
-    Formatted = io_lib:format("<html><body><p>~ts</p><p>~ts</p></body></html>", [Author, Encoded_tweet]), %FIXME: Needs to produce a binary
-    {Encoded_tweet, ReqData, State}.
+    %Encoded_tweet = unicode:characters_to_binary(Tweet),
+    Formatted = io_lib:format("<html><body><p>~ts</p><p>~ts</p></body></html>", [Author, Tweet]), %FIXME: Needs to produce a binary
+    {unicode:characters_to_binary(lists:flatten(Formatted)), ReqData, State}.
 
 charsets_provided(ReqData, State) ->
     {[{"utf8", fun convert/1}], ReqData, State}.
