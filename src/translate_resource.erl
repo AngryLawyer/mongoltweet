@@ -3,16 +3,14 @@
 %% @doc Example webmachine_resource.
 
 -module(translate_resource).
--export([init/1, to_html/2, charsets_provided/2, convert/1]).
+-export([init/1, to_html/2, charsets_provided/2]).
 
 -include_lib("webmachine/include/webmachine.hrl").
 
 init([]) -> {ok, undefined}.
 
 to_html(ReqData, State) ->
-    {Author, _Time, Tweet} = unpack_tweet(worker:get_unsolved_tweet()),
-    %Encoded_tweet = unicode:characters_to_binary(Tweet),
-    Formatted = io_lib:format("<html><body><p>~ts</p><p>~ts</p></body></html>", [Author, Tweet]), %FIXME: Needs to produce a binary
+    Formatted = to_json(unpack_tweet(worker:get_unsolved_tweet())),
     {unicode:characters_to_binary(lists:flatten(Formatted)), ReqData, State}.
 
 charsets_provided(ReqData, State) ->
@@ -25,3 +23,12 @@ unpack_tweet(undefined) ->
 
 convert(Body) ->
     Body.
+
+
+to_json({Author, Time, Tweet}) ->
+    io_lib:format(
+"{"
+"   'author': '~ts',"
+"   'time': ~i,"
+"   'tweet': '~ts'"
+"}", [Author, Time, Tweet]).
