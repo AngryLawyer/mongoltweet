@@ -40,6 +40,7 @@ init(Args) ->
     {ok, Args}.
 
 handle_call({translate, String}, _From, State) ->
+    io:format("~p", [State]),
     {reply, do_translate(String, proplists:get_value(translate_key, State)), State};
 handle_call({is_mongolian, String}, _From, State) ->
     {reply, check_is_mongolian(String), State};
