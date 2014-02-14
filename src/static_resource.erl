@@ -41,12 +41,16 @@ content_types_provided(ReqData, Ctx) ->
 
 provide_content(ReqData, Context) ->
     % We automagically force static stuff to the WWW directory
-    case maybe_fetch_object(Context, ["www/" | wrq:path(ReqData)]) of
+    Path = case Context#context.override_path of
+        undefined -> wrq:path(ReqData);
+        Override_path -> Override_path
+    end,
+    case maybe_fetch_object(Context, ["www/" | Path]) of
         {true, NewContext} ->
             Body = NewContext#context.response_body,
             {Body, ReqData, Context};
         {false, NewContext} ->
-            {error, ReqData, NewContext}
+            {"error", ReqData, NewContext}
     end.
 
 maybe_fetch_object(Context, Path) ->
