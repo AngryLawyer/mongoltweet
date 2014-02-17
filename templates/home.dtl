@@ -1,0 +1,22 @@
+{% extends "base.dtl" %}
+{% block content %}
+<div class="row">
+  <div class="jumbotron">
+    <div class="bs-example">
+      <form role="form">
+        <div class="form-group">
+          <p class="help-block js-tweet-source"></p>
+          <p class="help-block js-tweet-body"></p>
+        </div>
+        <div class="form-group">
+          <textarea class="form-control js-user-translation" placeholder="Your translation here..."></textarea>
+        </div>
+        <div class="form-group js-google-translation">
+          <p class="help-block"></p>
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
