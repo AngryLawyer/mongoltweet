@@ -12,12 +12,15 @@ init(Params) -> {ok, Params}.
 
 to_html(ReqData, State) ->
     {ok, Content} = history_dtl:render([
-        {path, wrq:path(ReqData)}
+        {path, wrq:path(ReqData)},
+        {tweets, worker:get_solved_tweets(10)}
     ]),
     {Content, ReqData, State}.
 
 charsets_provided(ReqData, State) ->
     {[{"utf8", fun convert/1}], ReqData, State}.
+
+%% Private functions
 
 convert(Body) ->
     Body.

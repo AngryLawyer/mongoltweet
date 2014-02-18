@@ -6,7 +6,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/1, update_tweets/0, get_unsolved_tweet/0, solve_tweet/3]).
+-export([start_link/1, update_tweets/0, get_unsolved_tweet/0, solve_tweet/3, get_solved_tweets/1]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -30,6 +30,9 @@ get_unsolved_tweet() ->
 
 solve_tweet(Name, Timestamp, Translation) ->
     gen_server:call(?MODULE, {solve_tweet, Name, Timestamp, Translation}).
+
+get_solved_tweets(Count) ->
+    gen_server:call(?MODULE, {get_solved_tweets, Count}).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -68,6 +71,8 @@ handle_call({solve_tweet, Name, Timestamp, Translation}, _From, State) ->
             database:insert_tweet(Name, Timestamp, Mongolian, English, Translation)
     end,
     {reply, Updated_tweet, State};
+handle_call({get_solved_tweets, Count}, _From, State) ->
+    {reply, database:search_tweets_by_solved(Count), State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
