@@ -11,7 +11,9 @@ init(Params) -> {ok, Params}.
 
 
 to_html(ReqData, State) ->
-    {ok, Content} = home_dtl:render([]),
+    {ok, Content} = home_dtl:render([
+        {path, wrq:path(ReqData)}
+    ]),
     {Content, ReqData, State}.
 
 charsets_provided(ReqData, State) ->
