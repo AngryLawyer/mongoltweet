@@ -1,0 +1,2 @@
+-record(user, {user_name, last_tweet}).
+-record(tweet, {user_name_and_timestamp, user_name, timestamp, mongolian, english, solved}).

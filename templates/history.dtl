@@ -1,15 +1,25 @@
 {% extends "base.dtl" %}
 {% block content %}
 <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>User</th>
-          <th>Source</th>
-          <th>Translation</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>User</th>
+      <th>Mongolian</th>
+      <th>My Translation</th>
+      <th>Expected Translation</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for tweet in tweets %}
+      <tr>
+        <td>{{tweet.timestamp}}</td>
+        <td>{{tweet.user_name}}</td>
+        <td>{{tweet.mongolian}}</td>
+        <td>{{tweet.solved}}</td>
+        <td>{{tweet.english}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
