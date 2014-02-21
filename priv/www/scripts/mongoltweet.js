@@ -7,13 +7,15 @@
 
     $(document).ready(function() {
         jsTweetSource = $('.js-tweet-source');
-        jsTweetBody = $('.js-tweet-body');
-        jsUserTranslation = $('.js-user-translation');
-        jsGoogleTranslation = $('.js-google-translation');
-        form = $('form');
-        form.submit(submit);
-        submitButton = form.find('button');
-        getLatestTweet();
+        if (jsTweetSource.length) {
+            jsTweetBody = $('.js-tweet-body');
+            jsUserTranslation = $('.js-user-translation');
+            jsGoogleTranslation = $('.js-google-translation');
+            form = $('form');
+            form.submit(submit);
+            submitButton = form.find('button');
+            getLatestTweet();
+        }
     });
 
     

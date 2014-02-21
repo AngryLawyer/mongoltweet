@@ -6,4 +6,4 @@ cd `dirname $0`
 
 ./rebar compile
 
-erl -boot start_sasl -pa $PWD/ebin -pa $PWD/deps/*/ebin -pa $ERL_LIBS/sync/ebin -config mongoltweet.config  -s crypto -s inets -s ssl -s lhttpc -s mochiweb -s webmachine -s mongoltweet start -mnesia dir '"."'
+erl -boot start_sasl -pa $PWD/ebin -pa $PWD/deps/*/ebin -pa $ERL_LIBS/sync/ebin -config mongoltweet.config -s mongoltweet start -mnesia dir '"."'
