@@ -1,7 +1,3 @@
-%% @author author <author@example.com>
-%% @copyright YYYY author.
-%% @doc Example webmachine_resource.
-
 -module(translate_resource).
 -export([init/1, to_json/2, charsets_provided/2, content_types_provided/2, process_post/2, allowed_methods/2]).
 
