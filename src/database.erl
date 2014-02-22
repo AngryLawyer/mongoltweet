@@ -151,7 +151,7 @@ internal_search_tweets_by_not_solved() ->
     internal_search_tweets('_', '_', '_', '_', false).
 
 internal_search_tweets_by_solved(Count) ->
-    Tweets = internal_search_tweets('_', '_', '_', '_', '_'),
+    Tweets = lists:reverse(internal_search_tweets('_', '_', '_', '_', '_')),
     Filtered_tweets = lists:filter(fun(Item) -> Item#tweet.solved =/= false end, Tweets),
     lists:sublist(Filtered_tweets, Count).
 
