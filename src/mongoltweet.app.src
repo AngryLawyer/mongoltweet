@@ -1,16 +1,11 @@
-{application, mongoltweet,
- [
-  {description, ""},
-  {vsn, "1"},
-  {registered, []},
-  {applications, [
-                  kernel,
-                  stdlib,
-                  inets,
-                  crypto,
-                  mochiweb,
-                  webmachine
-                 ]},
-  {mod, { mongoltweet_app, []}},
-  {env, []}
- ]}.
+{application,mongoltweet,
+             [{description,[]},
+              {vsn,"1"},
+              {registered,[]},
+              {applications,[kernel,stdlib,inets,crypto,mochiweb,webmachine]},
+              {mod,{mongoltweet_app,[]}},
+              {env,[]},
+              {modules,[base_dtl,database,encode_uri_rfc3986,history_dtl,
+                        history_resource,home_dtl,home_resource,mongoltweet,
+                        mongoltweet_app,mongoltweet_sup,static_resource,
+                        translate,translate_resource,tweetgrabber,worker]}]}.
